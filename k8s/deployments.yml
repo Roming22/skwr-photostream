@@ -1,0 +1,31 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: photostream
+  labels:
+    app: photostream
+  namespace: web
+spec:
+  selector:
+    matchLabels:
+      app: photostream
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: photostream
+    spec:
+      volumes:
+        - name: topic
+          persistentVolumeClaim:
+            claimName: web.photostream.topic.pvc
+      containers:
+        - image: docker.io/roming22/photostream:latest
+          imagePullPolicy: Always
+          command: ["/opt/app/bin/server.sh"]
+          name: photostream
+          volumeMounts:
+            - mountPath: "/opt/app/website/static/img/topic"
+              name: topic
